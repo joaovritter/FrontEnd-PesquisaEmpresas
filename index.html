@@ -31,18 +31,12 @@
             <div class="form-group">
                 <label for="estado">Estado:</label>
                 <select id="estado" required>
-                    <option value="">Carregando...</option>
+                    <!-- função no js que cria cada <option> -->
                 </select>
             </div>
 
-            <button type="submit" class="btn-pesquisar">Gerar Query</button>
+            <button type="submit" class="btn-pesquisar">Pesquisar</button>
         </form>
-
-        <div id="queryBox" class="query-box" style="display: none;">
-            <h2>Query JSON Gerada:</h2>
-            <div id="queryTexto" class="query-texto"></div>
-            <button id="copiarBtn" class="btn-copiar">📋 Copiar</button>
-        </div>
     </div>
 
     <script src="script.js"></script>

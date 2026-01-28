@@ -44,7 +44,7 @@ const ABREVIACOES = {
 function carregarEstados() {
     const selectEstado = document.getElementById('estado');
     selectEstado.innerHTML = '<option value="">Selecione o estado</option>';
-    
+
     ESTADOS.forEach(estado => {
         const option = document.createElement('option');
         option.value = estado.sigla;
@@ -56,20 +56,38 @@ function carregarEstados() {
 function expandirAbreviacoes(logradouro) {
     const palavras = logradouro.toLowerCase().split(' ');
     const primeiro = ABREVIACOES[palavras[0]] || palavras[0];
-    palavras[0] = primeiro.charAt(0).toUpperCase() + primeiro.slice(1);
-    return palavras.join(' ');
+    palavras[0] = primeiro.charAt(0).toUpperCase() + primeiro.slice(1); // formata para ex A + venida 
+    return palavras.join(' '); // junta novamente
 }
 
 function construirQuery(logradouro, numero, cidade, estado) {
     const logradouroExpandido = expandirAbreviacoes(logradouro);
     const pesquisa = `'${logradouroExpandido}' & '${numero}' & '${cidade}' & '${estado}'`;
-    
+
     return {
         pesquisa: pesquisa
     };
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+async function enviarQuery(query) {
+    try {
+        console.log('Enviando query:', query);
+        const response = await fetch('http://localhost:3000/pesquisar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(query)
+        });
+        const dados = await response.json();
+        console.log('Resposta do backend:', dados);
+    } catch (error) {
+        console.error('Erro ao conectar com backend:', error);
+    }
+
+}
+
+document.addEventListener('DOMContentLoaded', () => { // quando o DOM estiver carregado
     carregarEstados();
 
     document.getElementById('pesquisaForm').addEventListener('submit', (e) => {
@@ -81,14 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const estado = document.getElementById('estado').value;
 
         const query = construirQuery(logradouro, numero, cidade, estado);
-        
-        document.getElementById('queryTexto').textContent = JSON.stringify(query, null, 2);
-        document.getElementById('queryBox').style.display = 'block';
-    });
-
-    document.getElementById('copiarBtn').addEventListener('click', () => {
-        const queryTexto = document.getElementById('queryTexto').textContent;
-        navigator.clipboard.writeText(queryTexto);
-        alert('Query copiada para a área de transferência!');
+        enviarQuery(query);
     });
 });
